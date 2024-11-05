@@ -1,154 +1,173 @@
-# AI-Powered Meeting Summarizer
+# AI-Auditing Meeting Summarizer
 
-## Overview
+An AI-driven tool that processes meeting audio, videos and text files and provides concise, accurate summaries. This project leverages **whisper.cpp** for efficient audio-to-text conversion and models from the **Ollama server** for summarization. The application also provides a user-friendly **Gradio** web interface.
 
-The **AI-Powered Meeting Summarizer** is a Gradio-powered application that converts audio recordings of meetings into transcripts and provides concise summaries using `whisper.cpp` for audio-to-text conversion and `Ollama` for text summarization. This tool is ideal for quickly extracting key points, decisions, and action items from meetings.
+## Table of Contents
 
-<img width="1512" alt="Screenshot 2024-10-01 at 10 05 32 PM" src="https://github.com/user-attachments/assets/5b93cfed-c853-4ebb-8d90-bbda58354192">
+- [Introduction](#introduction)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [Dependencies](#dependencies)
+- [Configuration](#configuration)
+- [Running the Application](#running-the-application)
+- [Customization](#customization)
+- [Examples](#examples)
+- [Troubleshooting](#troubleshooting)
+- [Contributors](#contributors)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
+---
 
-https://github.com/user-attachments/assets/2f1de19d-0feb-4a35-a6ab-f9be8dabf512
+## Introduction
 
-
-
+The **AI-Auditing Meeting Summarizer** is designed to transcribe and summarize meeting audios, videos recordings efficiently. If you already has a meeting transcript, you can use the **AI-Auditing Meeting Summarizer** as well to summarize it. Using **whisper.cpp** for audio-to-text conversion and **Ollama** models for summarization, it extracts key points, decisions, and action items from meetings in an easily digestible format. The application is powered by **Gradio** for a seamless user experience.
 
 ## Features
 
-- **Audio-to-Text Conversion**: Uses `whisper.cpp` to convert audio files into text.
-- **Text Summarization**: Uses models from the `Ollama` server to summarize the transcript.
-- **Multiple Models Support**: Supports different Whisper models (`base`, `small`, `medium`, `large-V3`) and any available model from the Ollama server.
-- **Translation**: Allows translation of non-English audio to English using Whisper.
-- **Gradio Interface**: Provides a user-friendly web interface to upload audio files, view summaries, and download transcripts.
-
-## Requirements
-
-- Python 3.x
-- [FFmpeg](https://www.ffmpeg.org/) (for audio processing)
-- [Whisper.cpp](https://github.com/ggerganov/whisper.cpp) (for audio-to-text conversion)
-- [Ollama server](https://ollama.com/) (for text summarization)
-- [Gradio](https://www.gradio.app/) (for the web interface)
-- [Requests](https://requests.readthedocs.io/en/latest/) (for handling API calls to the Ollama server)
-
-## Pre-Installation
-
-Before running the application, ensure you have Ollama that is running on your local machine or a server. You can follow the instructions provided in the [Ollama repository](https://github.com/ollama/ollama) to set up the server. Do not forget to download and run a model from the Ollama server.
-
-```bash
-# To install and run Llama 3.2
-ollama run llama3.2
-```
+- **Audio/Video-to-Text Conversion**: Uses `whisper.cpp` to transform audio files into text with support for multiple models (e.g., base, small, medium, large-V3).
+- **Text Summarization**: Utilizes models from the Ollama server to provide concise summaries.
+- **Multiple Model Support**: Easily switch between different Whisper and Ollama models.
+- **Translation**: Automatically detects and transcribe audio and videos files to English and Brazilian Portuguese if necessary, and also allows the user download the transcriptions as text files.
+- **Gradio Interface**: Offers a web-based interface to upload audio, view summaries, and download transcripts.
 
 ## Installation
 
-Follow the steps below to set up and run the application:
+1. **Pre-Installation**: Ensure you have the **Ollama server** running locally or on a remote server. Follow the Ollama documentation to set up the server and download a model.
+   ```bash
+   # Example: Running Llama 3.2 on Ollama
+   ollama run llama3.2
+   ```	
 
-### Step 1: Clone the Repository
+2. **Clone the Repository**: Clone the repository from GitHub:
+   ```bash
+   git clone https://github.com/erick-lemos/AI-Auditing-Meeting-Summarizer.git
+   cd AI-Powered-Meeting-Summarizer
+   ```
 
-```bash
-git clone https://github.com/AlexisBalayre/AI-Powered-Meeting-Summarizer
-cd AI-Powered-Meeting-Summarizer
-```
-
-### Step 2: Run the Setup Script
-
-To install all necessary dependencies (including Python virtual environment, `whisper.cpp`, FFmpeg, and Python packages), and to run the application, execute the provided setup script:
-
-```bash
-chmod +x run_meeting_summarizer.sh
-./run_meeting_summarizer.sh
-```
-
+3. **Run the Setup Script**:
+   ```bash
+   chmod +x run_meeting_summarizer.sh
+   ./run_meeting_summarizer.sh
+   ```
 This script will:
 
-- Create and activate a Python virtual environment.
-- Install necessary Python packages like `requests` and `gradio`.
-- Check if `FFmpeg` is installed and install it if missing.
-- Clone and build `whisper.cpp`.
-- Download the required Whisper model (default: `small`).
-- **Run the `main.py` script**, which will start the Gradio interface for the application.
-
-### Step 3: Accessing the Application
-
-Once the setup and execution are complete, Gradio will provide a URL (typically `http://127.0.0.1:7860`). Open this URL in your web browser to access the Meeting Summarizer interface.
-
-Alternatively, after setup, you can activate the virtual environment and run the Python script manually:
-
-```bash
-# Activate the virtual environment
-source .venv/bin/activate
-
-# Run the main.py script
-python main.py
-```
+* Create and activate a Python virtual environment.
+* Install dependencies including requests, gradio, and ffmpeg.
+* Build whisper.cpp and download the necessary Whisper model.
+* Launch the Gradio interface.
 
 ## Usage
 
 ### Uploading an Audio File
 
-1. **Upload an Audio File**: Click on the audio upload area and select an audio file in any supported format (e.g., `.wav`, `.mp3`).
-2. **Provide Context (Optional)**: You can provide additional context for better summarization (e.g., "Meeting about AI and Ethics").
-3. **Select Whisper Model**: Choose one of the available Whisper models (`base`, `small`, `medium`, `large-V3`) for audio-to-text conversion.
-4. **Select Summarization Model**: Choose a model from the available options retrieved from the `Ollama` server.
+1. **Upload**: Click on the upload area to select an audio/video file in formats like `.wav`, `mp3`, `mp4`, and also `.txt`.
+2. **Context (Optional)**: Provide context to help refine the summarization (e.g., "Meeting about Q4 Financials").
+3. **Model Selection**: Choose a Whisper model for transcription and an Ollama model for summarization (For this project I used `small` and ``medium` models).
 
 ### Viewing Results
 
-- After uploading an audio file, you will get a **Summary** of the transcript generated by the selected models.
-- You can also **download the full transcript** as a text file by clicking the provided link.
+- The Gradio interface will display the generated transcript and summary.
+- Download the full transcript as a text file if needed.
+
+## Project Structure
+
+The project structure is as follows:
+
+```plaintext
+AI-Powered-Meeting-Summarizer/
+│
+├── backend/
+│   ├── __init__.py
+│   ├── audio_processing.py  # Converts audio to text
+│   ├── model_services.py    # Manages AI model services
+│   └── summarizer.py        # Summarizes text content
+│
+├── frontend/
+│   ├── __init__.py
+│   └── app.py               # Web interface logic using Gradio
+│
+├── whisper.cpp              # C++ code for Whisper models
+├── main.py                  # Main entry point
+├── requirements.txt         # Python dependencies
+├── run_app.sh               # Runs the Gradio app
+├── run_meeting_summarizer.sh# Full setup and run script
+├── .gitignore               # Git ignored files
+└── LICENSE                  # Project license
+```
+## Dependencies
+
+- **Python 3.x**
+- **FFmpeg**: For audio processing
+- **whisper.cpp**: For audio-to-text conversion
+- **Ollama server**: For text summarization
+- **Gradio**: For the frontend interface
+- **Requests**: To make API calls to the Ollama server
+
+## Configuration
+
+- **Audio Processing**: Ensure `ffmpeg` is installed for handling various audio formats.
+- **Model Configuration**: Modify model settings in `run_meeting_summarizer.sh` or directly within Python files.
+
+## Running the Application
+
+### Using Shell Scripts
+- When running the application for the first time, run `./run_meeting_summarizer.sh` for a full setup.
+
+This script will:
+
+- Create and activate a Python virtual environment.
+- Install necessary Python packages like requests and gradio.
+- Check if FFmpeg is installed and install it if missing.
+- Clone and build whisper.cpp.
+- Download the required Whisper model (default: small).
+- Run the main.py script, which will start the Gradio interface for the application.
+
+After the initial setup, you can start the app using `./run_app.sh` 
+
+### Manual Execution
+
+    ```bash
+    source .venv/bin/activate
+    python main.py
+    ```
+- The Gradio URL will appear in the console. Visit it in your browser to use the app.
 
 ## Customization
 
-### Changing the Whisper Model
+- **Changing Whisper Models**: Modify `WHISPER_MODEL` in `run_meeting_summarizer.sh` to change the model:
+  ```bash
+  WHISPER_MODEL="medium"
+  ```	
+**Downloading Additional Models:**
+    ```bash
+    cd whisper.cpp
+    ./models/download-ggml-model.sh base  # Download base model
+    ./models/download-ggml-model.sh large # Download large model
+    ```
+## Examples
 
-By default, the Whisper model used is `small`. You can modify this in the `run_meeting_summarizer.sh` script by changing the `WHISPER_MODEL` variable:
+Use the following commands to test the summarizer:
 
-```bash
-WHISPER_MODEL="medium"
-```
+## Troubleshooting
 
-Alternatively, you can select different Whisper models from the dropdown in the Gradio interface. The list of available models is dynamically generated based on the `.bin` files found in the `whisper.cpp/models` directory.
+- **Virtual Environment Issues**: Ensure the virtual environment is activated.
+- **Model Errors**: Verify model paths and server connections.
+- **Audio Processing**: Check `ffmpeg` installation if audio conversion fails.
 
-### Downloading Additional Whisper Models
+## Contributors
 
-To download a different Whisper model (e.g., `base`, `medium`, `large`), use the following steps:
-
-1. Navigate to the `whisper.cpp` directory:
-
-   ```bash
-   cd whisper.cpp
-   ```
-
-2. Use the provided script to download the desired model. For example, to download the `base` model, run:
-
-   ```bash
-   ./models/download-ggml-model.sh base
-   ```
-
-   For the `large` model, you can run:
-
-   ```bash
-   ./models/download-ggml-model.sh large
-   ```
-
-   This will download the `.bin` file into the `whisper.cpp/models` directory.
-
-3. Once downloaded, the new model will automatically be available in the model dropdown when you restart the application.
-
-### Configuring Translation
-
-By default, Whisper will detect the language of the audio file and translate it to English if necessary. This behavior is controlled by the `-l` flag in the `whisper.cpp` command.
-
-```bash
-./whisper.cpp/main -m ./whisper.cpp/models/ggml-{WHISPER_MODEL}.bin -l fr -f "{audio_file_wav}"
-```
-
-This flag tells Whisper to translate the audio into French regardless of the original language.
+- **William Massalino** - Project Lead & Developer
+- Contributions are welcome! Open issues or submit pull requests for improvements.
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
 
 ## Acknowledgements
 
-- **whisper.cpp** by Georgi Gerganov for the audio-to-text conversion.
-- **Gradio** for the interactive web interface framework.
-- **Ollama** for providing large language models for summarization.
+- **whisper.cpp** by Georgi Gerganov for audio-to-text conversion.
+- **Gradio** for the interactive web interface.
+- **Ollama** for the large language models used in summarization.
