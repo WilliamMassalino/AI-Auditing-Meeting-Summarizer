@@ -43,8 +43,8 @@ The **AI-Auditing Meeting Summarizer** is designed to transcribe and summarize m
 
 2. **Clone the Repository**: Clone the repository from GitHub:
    ```bash
-   git clone https://github.com/erick-lemos/AI-Auditing-Meeting-Summarizer.git
-   cd AI-Powered-Meeting-Summarizer
+   git clone https://github.com/WilliamMassalino/AI-Auditing-Meeting-Summarizer.git
+   cd AI-Auditing-Meeting-Summarizer
    ```
 
 3. **Run the Setup Script**:
