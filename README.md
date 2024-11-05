@@ -43,8 +43,8 @@ The **AI-Auditing Meeting Summarizer** is designed to transcribe and summarize m
 
 2. **Clone the Repository**: Clone the repository from GitHub:
    ```bash
-   git clone https://github.com/erick-lemos/AI-Auditing-Meeting-Summarizer.git
-   cd AI-Powered-Meeting-Summarizer
+   git clone https://github.com/WilliamMassalino/AI-Auditing-Meeting-Summarizer.git
+   cd AI-Auditing-Meeting-Summarizer
    ```
 
 3. **Run the Setup Script**:
@@ -149,7 +149,10 @@ After the initial setup, you can start the app using `./run_app.sh`
     ```
 ## Examples
 
-Use the following commands to test the summarizer:
+In this example, I used an audio(created by AI) about an Initial Audit Meeting (The same audio example can be found in the `Example` folder:
+
+![image](https://github.com/user-attachments/assets/0f559cb8-29e1-4f1b-957c-bbaa5859b114)
+
 
 ## Troubleshooting
 
