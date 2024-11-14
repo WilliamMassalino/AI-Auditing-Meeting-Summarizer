@@ -1,6 +1,6 @@
-# AI-Auditing Meeting Summarizer
+# AI-Auditing Meeting Summarizer and Interactive Chat
 
-An AI-driven tool that processes meeting audio, videos and text files and provides concise, accurate summaries. This project leverages **whisper.cpp** for efficient audio-to-text conversion and models from the **Ollama server** for summarization. The application also provides a user-friendly **Gradio** web interface.
+An AI-driven tool that processes meeting audio, video, and text files to provide concise, accurate summaries and enables interactive chat with the transcript. This tool leverages whisper.cpp for efficient audio-to-text conversion and models from the Ollama server for summarization and chat capabilities. The application also includes a user-friendly Gradio web interface.
 
 ## Table of Contents
 
@@ -23,12 +23,13 @@ An AI-driven tool that processes meeting audio, videos and text files and provid
 
 ## Introduction
 
-The **AI-Auditing Meeting Summarizer** is designed to transcribe and summarize meeting audios, videos recordings efficiently. If you already has a meeting transcript, you can use the **AI-Auditing Meeting Summarizer** as well to summarize it. Using **whisper.cpp** for audio-to-text conversion and **Ollama** models for summarization, it extracts key points, decisions, and action items from meetings in an easily digestible format. The application is powered by **Gradio** for a seamless user experience.
+The **AI-Powered Meeting Assistant** is designed to transcribe, summarize, and interactively chat with meeting content. It allows users to upload meeting audios, video recordings, or text transcripts and provides options for summarization and interactive Q&A with the transcript. The chat feature retains context, enabling a continuous conversation and recall of previous interactions within the session. Using **whisper.cpp** for audio-to-text conversion and **Ollama** models for summarization and chat, this tool extracts key points, decisions, and action items in an easily digestible format. The application is powered by **Gradio** for a seamless user experience.
 
 ## Features
 
 - **Audio/Video-to-Text Conversion**: Uses `whisper.cpp` to transform audio files into text with support for multiple models (e.g., base, small, medium, large-V3).
 - **Text Summarization**: Utilizes models from the Ollama server to provide concise summaries.
+- **Interactive Chat**: Engage in a Q&A session with the transcribed meeting content, with memory of prior questions and answers for a continuous conversation.
 - **Multiple Model Support**: Easily switch between different Whisper and Ollama models.
 - **Translation**: Automatically detects and transcribe audio and videos files to English and Brazilian Portuguese if necessary, and also allows the user download the transcriptions as text files.
 - **Gradio Interface**: Offers a web-based interface to upload audio, view summaries, and download transcripts.
@@ -67,6 +68,10 @@ This script will:
 2. **Context (Optional)**: Provide context to help refine the summarization (e.g., "Meeting about Q4 Financials").
 3. **Model Selection**: Choose a Whisper model for transcription and an Ollama model for summarization (For this project I used `small` and ``medium` models).
 
+### Interacting with the Chat Feature
+
+* After transcription, access the **Chat** feature to ask questions about the meeting content. The assistant retains memory of prior questions and responses within the session, allowing for follow-up questions based on previous answers.
+
 ### Viewing Results
 
 - The Gradio interface will display the generated transcript and summary.
@@ -77,25 +82,31 @@ This script will:
 The project structure is as follows:
 
 ```plaintext
-AI-Powered-Meeting-Summarizer/
+AI-Powered-Meeting-Assistant/
 │
 ├── backend/
 │   ├── __init__.py
-│   ├── audio_processing.py  # Converts audio to text
-│   ├── model_services.py    # Manages AI model services
-│   └── summarizer.py        # Summarizes text content
+│   ├── audio_processing.py      # Converts audio to text
+│   ├── model_services.py        # Manages AI model services
+│   ├── summarizer.py            # Summarizes text content
+│   ├── populate_database.py     # Populates the Chroma database
+│   └── rag_app/                 # Responsible for Retrieval-Augmented Generation (RAG) chat functionality
+│       ├── get_chroma_db.py     # Retrieves relevant documents for chat
+│       ├── get_embedding_function.py # Embedding function for document matching
+│       └── query_rag.py         # Handles interactive query processing
 │
 ├── frontend/
 │   ├── __init__.py
-│   └── app.py               # Web interface logic using Gradio
+│   └── app.py                   # Web interface logic using Gradio
 │
-├── whisper.cpp              # C++ code for Whisper models
-├── main.py                  # Main entry point
-├── requirements.txt         # Python dependencies
-├── run_app.sh               # Runs the Gradio app
-├── run_meeting_summarizer.sh# Full setup and run script
-├── .gitignore               # Git ignored files
-└── LICENSE                  # Project license
+├── whisper.cpp                  # C++ code for Whisper models
+├── main.py                      # Main entry point
+├── requirements.txt             # Python dependencies
+├── run_app.sh                   # Runs the Gradio app
+├── run_meeting_summarizer.sh    # Full setup and run script
+├── .gitignore                   # Git ignored files
+└── LICENSE                      # Project license
+
 ```
 ## Dependencies
 
@@ -149,9 +160,12 @@ After the initial setup, you can start the app using `./run_app.sh`
     ```
 ## Examples
 
-In this example, I used an audio(created by AI) about an Initial Audit Meeting (The same audio example can be found in the `Example` folder:
+In this example, I used an audio(created by AI) about an Initial Audit Meeting (The same audio example can be found in the `Example` folder) and after the transcription, I used the chat feature to ask questions about the meeting content.:
+**Notice: I asked questions about the meeting content, and the chat feature retained context, allowing for follow-up questions based on previous answers.**
 
-![image](https://github.com/user-attachments/assets/0f559cb8-29e1-4f1b-957c-bbaa5859b114)
+![alt text](image.png)
+
+![alt text](image-1.png)
 
 
 ## Troubleshooting

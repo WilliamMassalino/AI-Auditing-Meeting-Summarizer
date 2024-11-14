@@ -1,76 +1,102 @@
-import gradio as gr  # Import the Gradio library for creating a web interface
-from backend.model_services import get_available_models, get_available_whisper_models  # Import functions to retrieve available models
-from backend.summarizer import translate_and_summarize  # Import the function to process and summarize audio or text
+import gradio as gr
+from backend.model_services import get_available_models, get_available_whisper_models
+from backend.summarizer import translate_and_summarize
+from backend.rag_app.query_rag import query_rag
 
-# Main function to handle the Gradio interface logic
-def gradio_app(file, context: str, whisper_model_name: str, llm_model_name: str) -> tuple[str, str]:
-    """
-    Handles the uploaded file and generates a summary based on the content.
-    
-    Args:
-        file: The uploaded file (can be audio, video, or a .txt file containing a transcription)
-        context (str): Optional context provided by the user for a better summary
-        whisper_model_name (str): Name of the Whisper model to use for audio-to-text conversion
-        llm_model_name (str): Name of the model to use for summarization
-    
-    Returns:
-        tuple[str, str]: The generated summary and the path to the transcript file
-    """
-    # Check if the uploaded file is a text file (.txt)
+# Function to handle summarization and return transcript file path
+def gradio_app(file, context: str, whisper_model_name: str, llm_model_name: str) -> tuple[str, gr.File]:
     if file.endswith(".txt"):
-        # Read the text from the .txt file
         with open(file, "r") as f:
             transcript = f.read().strip()
-        # If the file is a transcript, skip audio processing and directly summarize
         summary, transcript_file = translate_and_summarize(
             transcript, context, whisper_model_name, llm_model_name, is_transcript=True
         )
     else:
-        # If the file is an audio/video file, process it to generate a transcript and then summarize
         summary, transcript_file = translate_and_summarize(
             file, context, whisper_model_name, llm_model_name
         )
-    
-    return summary, transcript_file  # Return the summary and the downloadable transcript
+    return summary, gr.update(value=transcript_file, visible=True)
+
+# Function to handle chat queries to the transcript
+def chat_with_transcript(transcript_file, query_text, history):
+    response = query_rag(transcript_file, query_text, history).response_text
+    # Return updated history and clear input
+    return history, ""  # History is updated within query_rag
+
+# Function to clear the inputs and outputs
+def clear_all():
+    return None, "", gr.update(value=None, visible=False), [], gr.update(interactive=False)
+
+# Function to update clear button visibility
+def update_clear_button(file, summary, history):
+    if file or summary or history:
+        return gr.update(interactive=True)
+    return gr.update(interactive=False)
 
 # Function to create and configure the Gradio interface
 def create_gradio_interface():
-    """
-    Creates the Gradio interface for the meeting summarizer application.
-    
-    Returns:
-        Gradio Interface object
-    """
-    # Retrieve available models for audio-to-text and summarization
     ollama_models = get_available_models()
     whisper_models = get_available_whisper_models()
 
-    # Define the Gradio interface
-    iface = gr.Interface(
-        fn=gradio_app,  # Function to call when the user interacts with the interface
-        inputs=[
-            gr.File(label="Upload Audio/Video or Transcription File (.txt)"),  # File input for audio/video or .txt
-            gr.Textbox(
-                label="Context (optional)",  # Optional textbox for additional context
-                placeholder="Provide any additional context for the summary",
-            ),
-            gr.Dropdown(
-                choices=whisper_models,  # Dropdown to select the Whisper model
-                label="Select a Whisper model for audio-to-text conversion",
-                value=whisper_models[0] if whisper_models else None,  # Default selection
-            ),
-            gr.Dropdown(
-                choices=ollama_models,  # Dropdown to select the summarization model
-                label="Select a model for summarization",
-                value=ollama_models[0] if ollama_models else None,  # Default selection
-            ),
-        ],
-        outputs=[
-            gr.Textbox(label="Summary", show_copy_button=True),  # Textbox to display the generated summary
-            gr.File(label="Download Transcript"),  # File output for the downloadable transcript
-        ],
-        analytics_enabled=False,  # Disable analytics for the interface
-        title="Auditing Meeting Summarizer",  # Title of the interface
-        description="Upload an audio/video file or a transcription (.txt) and get a summary of the key concepts discussed.",  # Description
-    )
-    return iface  # Return the configured interface
+    with gr.Blocks() as app:
+        gr.Markdown(
+            "<h2 style='text-align: center;'>Meeting Summarizer and Interactive Chat</h2>"
+        )
+
+        with gr.Row():
+            with gr.Column():
+                file_input = gr.File(label="Upload Audio/Video or Transcription File (.txt)")
+                context_input = gr.Textbox(
+                    label="Context (optional)",
+                    placeholder="Provide any additional context for the summary",
+                )
+                whisper_model_dropdown = gr.Dropdown(
+                    choices=whisper_models,
+                    label="Select a Whisper model for audio-to-text conversion",
+                    value=whisper_models[0] if whisper_models else None,
+                )
+                ollama_model_dropdown = gr.Dropdown(
+                    choices=ollama_models,
+                    label="Select a model for summarization",
+                    value=ollama_models[0] if ollama_models else None,
+                )
+                submit_button = gr.Button("Submit")
+                clear_button = gr.Button("Clear", interactive=False)  # Initially disabled
+
+            with gr.Column():
+                summary_output = gr.Textbox(label="Summary", show_copy_button=True)
+                transcript_download = gr.File(label="Download Transcript", visible=False)
+                
+                gr.Markdown("### Ask questions about the transcript content below:")
+                chat_history = gr.Chatbot(label="Chatbot", type="messages")
+                user_query_input = gr.Textbox(label="Your Question", placeholder="Ask about the transcript content")
+                query_button = gr.Button("Ask")
+
+        submit_button.click(
+            fn=gradio_app,
+            inputs=[file_input, context_input, whisper_model_dropdown, ollama_model_dropdown],
+            outputs=[summary_output, transcript_download]
+        )
+
+        # Initialize an empty history list for managing conversation context
+        query_button.click(
+            fn=chat_with_transcript,
+            inputs=[transcript_download, user_query_input, gr.State([])],  # Initialize history as an empty list
+            outputs=[chat_history, user_query_input]
+        )
+
+        clear_button.click(
+            fn=clear_all,
+            inputs=[],
+            outputs=[file_input, summary_output, transcript_download, chat_history, clear_button]
+        )
+
+        file_input.change(fn=update_clear_button, inputs=[file_input, summary_output, chat_history], outputs=clear_button)
+        summary_output.change(fn=update_clear_button, inputs=[file_input, summary_output, chat_history], outputs=clear_button)
+        chat_history.change(fn=update_clear_button, inputs=[file_input, summary_output, chat_history], outputs=clear_button)
+
+    return app
+
+# Launch the Gradio app
+if __name__ == "__main__":
+    create_gradio_interface().launch()
