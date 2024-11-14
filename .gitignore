@@ -1,7 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Database files
+*.sqlite3
+
+# Compiled binary files
+*.bin
+
+# Data directories
 .venv
-/flagged
-transcript.txt
-/whisper.cpp
-.DS_Store
-*.pyc
 .gradio
+data/
+
+# Audio/Video files
+*.mp3
+*.mp4
+*.wav
+
+# Ignore all files in 'example' directory if not needed
+example/
+
+# Zone Identifier files (Windows)
+*Zone.Identifier
